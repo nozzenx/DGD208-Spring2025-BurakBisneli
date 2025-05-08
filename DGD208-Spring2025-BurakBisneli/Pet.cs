@@ -1,12 +1,25 @@
-﻿namespace DGD208_Spring2025_BurakBisneli;
+﻿using System.Diagnostics;
+
+namespace DGD208_Spring2025_BurakBisneli;
 
 public class Pet
 {
+    private string _name;
+    
     private int _hunger = 50;
     private int _sleep = 50;
     private int _fun = 50;
 
+    public Pet(string name)
+    {
+        _name = name;
+    }
 
+    public void Talk()
+    {
+        Console.WriteLine($"{_name}");
+    }
+    
     public void IncreaseHunger(int amount)
     {
         if(_hunger + amount <= 100)
