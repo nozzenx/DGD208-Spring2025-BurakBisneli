@@ -18,6 +18,9 @@ public class Pet
     public void Talk()
     {
         Console.WriteLine($"{_name}");
+        Console.WriteLine($"HUNGER : {_hunger}");
+        Console.WriteLine($"SLEEP : {_sleep}");
+        Console.WriteLine($"FUN : {_fun}");
     }
     
     public void IncreaseHunger(int amount)
