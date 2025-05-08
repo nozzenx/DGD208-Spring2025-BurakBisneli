@@ -2,38 +2,62 @@
 
 public class Pet
 {
-    private int _hunger;
-    private int _sleep;
-    private int _fun;
+    private int _hunger = 50;
+    private int _sleep = 50;
+    private int _fun = 50;
 
 
     public void IncreaseHunger(int amount)
     {
-        _hunger += amount;
+        if(_hunger + amount <= 100)
+            _hunger += amount;
+        else
+            _hunger = 100;
+        
     }
 
     public void DecreaseHunger(int amount)
     {
-        _hunger -= amount;
+        if(_hunger - amount >= 0)
+            _hunger -= amount;
+        else
+            _hunger = 0;
+        
     }
 
     public void IncreaseSleep(int amount)
     {
-        _sleep += amount;
+        if(_sleep + amount <= 100)
+            _sleep += amount;
+        else
+            _sleep = 100;
+        
     }
 
     public void DecreaseSleep(int amount)
     {
-        _sleep -= amount;
-    }
+        if(_sleep - amount >= 0)
+            _sleep -= amount;
+        else
+            _sleep = 0;
+        
+    }   
 
     public void IncreaseFun(int amount)
     {
-        _fun += amount;
+        if(_fun + amount <= 100)
+            _fun += amount;
+        else
+            _fun = 100;
+        
     }
 
     public void DecreaseFun(int amount)
     {
-        _fun -= amount;
+        if(_fun - amount >= 0)
+            _fun -= amount;
+        else
+            _fun = 0;
+        
     }
 }
