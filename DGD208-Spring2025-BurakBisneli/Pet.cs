@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace DGD208_Spring2025_BurakBisneli;
+﻿namespace DGD208_Spring2025_BurakBisneli;
 
 public class Pet
 {
