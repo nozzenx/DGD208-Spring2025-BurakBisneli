@@ -2,40 +2,40 @@
 
 public class Pet
 {
-    private string _name;
+    public string Name { get; private set; }
     
-    private int _hunger = 50;
+    public int Hunger { get; private set; } = 50;
     private int _sleep = 50;
     private int _fun = 50;
 
     public Pet(string name)
     {
-        _name = name;
+        Name = name;
     }
 
     public void Talk()
     {
-        Console.WriteLine($"{_name}");
-        Console.WriteLine($"HUNGER : {_hunger}");
+        Console.WriteLine($"{Name}");
+        Console.WriteLine($"HUNGER : {Hunger}");
         Console.WriteLine($"SLEEP : {_sleep}");
         Console.WriteLine($"FUN : {_fun}");
     }
     
     public void IncreaseHunger(int amount)
     {
-        if(_hunger + amount <= 100)
-            _hunger += amount;
+        if(Hunger + amount <= 100)
+            Hunger += amount;
         else
-            _hunger = 100;
+            Hunger = 100;
         
     }
 
     public void DecreaseHunger(int amount)
     {
-        if(_hunger - amount >= 0)
-            _hunger -= amount;
+        if(Hunger - amount >= 0)
+            Hunger -= amount;
         else
-            _hunger = 0;
+            Hunger = 0;
         
     }
 
