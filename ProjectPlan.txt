@@ -1,0 +1,30 @@
+Pet Simulator
+
+start simulator
+	adopt pet
+		pluto, 3 years old, injured
+			(adopt pet)
+			yes
+			no
+		ghost, 8 years old, healthy
+			(adopt pet)
+			yes
+			no
+	see current pets 
+		name: max, hunger: 20, happy: 70
+			(pet options)
+			feed max (uses time + food)
+			play with max (uses time, -10 food)
+			use item
+				fish toy (+40 happy)
+				reward food (+30 happy, +15 hunger)
+				back
+			back
+		back
+	see current items 
+		fish toy (+40 happy)
+		reward food (+30 happy, +15 hunger)
+		back
+	back to main menu
+credits
+exit game
