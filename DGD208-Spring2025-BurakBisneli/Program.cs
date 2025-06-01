@@ -12,9 +12,6 @@ var pet = new Pet("Ghost");
 async Task Main()
 {
     menu.StartMenu();
-    pet.Talk();
-
-    await petCareManager.Feed(pet, 10);
 }
 
 await Main();
