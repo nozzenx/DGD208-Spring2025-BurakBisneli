@@ -34,14 +34,11 @@ public class PetInventoryManager
         AdoptablePets.Add(sheep);
         AdoptablePets.Add(chicken);
     }
-    
-    public void AddPet(Pet pet)
+
+    public void AdoptPet(Pet pet)
     {
         CurrentPets.Add(pet);
+        AdoptablePets.Remove(pet);
     }
     
-    public void RemovePet(Pet pet)
-    {
-        CurrentPets.Remove(pet);
-    }
 }

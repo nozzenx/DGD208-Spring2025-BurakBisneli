@@ -2,168 +2,284 @@
 
 namespace DGD208_Spring2025_BurakBisneli;
 
-public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this tutorial to achieve this menu.
+public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this tutorial to achieve the base menu and used Claude Sonnet 4 to get ideas to adapt it myself.
 {
     private ConsoleKeyInfo _key;
+    private bool _isGameRunning = false;
     
-    private const string ColorMagenta = "\e[35m";
-    private const string DefaultColor = "\e[0m";
-    private const string ColorRed = "\e[31m";
-    private const string ColorCyan = "\e[36m";
+    private static class Colors
+    {
+        public const string Magenta = "\e[35m";
+        public const string Default = "\e[0m";
+        public const string Red = "\e[31m";
+        public const string Cyan = "\e[36m";
+    }
     
     private int _left, _top;
-    
-
-    
-
     private PetInventoryManager _petInventoryManager = new PetInventoryManager();
+    private PetCareManager _petCareManager = new PetCareManager();
     
     public void StartMenu()
     {
-        MainMenu();
+        _isGameRunning = true;
+        ShowMainMenu();
     }
 
-    private void MainMenu()
+    
+    private int ShowMenu(string title, List<MenuItem> menuItems, string subtitle = null)
     {
-        int option = 1;
         Console.Clear();
-        Console.WriteLine($"{ColorMagenta}           Interactive Pet Simulator {DefaultColor}");
-        Console.WriteLine($"{ColorCyan}Use up and down arrow keys to navigate and enter to select.\n{DefaultColor}");
+        
+        if (!string.IsNullOrEmpty(title))
+        {
+            Console.WriteLine($"{Colors.Magenta}{title}{Colors.Default}");
+        }
+        
+        if (!string.IsNullOrEmpty(subtitle))
+        {
+            Console.WriteLine($"{Colors.Cyan}{subtitle}{Colors.Default}\n");
+        }
+
         (int left, int top) = Console.GetCursorPosition();
         _left = left;
         _top = top;
         
-        bool isSelectedInMenu = false;
-        while (!isSelectedInMenu)
+        int selectedOption = 0;
+        bool isSelected = false;
+
+        while (!isSelected)
         {
             Console.SetCursorPosition(_left, _top);
             
-            
-            Console.WriteLine($"{(option == 1 ? ColorRed : DefaultColor)}Start Game{DefaultColor}");
-            Console.WriteLine($"{(option == 2 ? ColorRed : DefaultColor)}Credits{DefaultColor}");
-            Console.WriteLine($"{(option == 3 ? ColorRed : DefaultColor)}Exit Game{DefaultColor}");
+            // Display menu items
+            for (int i = 0; i < menuItems.Count; i++)
+            {
+                string color = selectedOption == i ? Colors.Red : Colors.Default; // Changing the selected option color
+                Console.WriteLine($"{color}{menuItems[i].Text}{Colors.Default}");
+            }
             
             _key = Console.ReadKey(false);
 
             switch (_key.Key)
             {
                 case ConsoleKey.DownArrow:
-                    option = (option == 3 ? 1 : option + 1);
+                    selectedOption = (selectedOption == menuItems.Count - 1) ? 0 : selectedOption + 1;
                     break;
                 case ConsoleKey.UpArrow:
-                    option = (option == 1 ? 3 : option - 1);
+                    selectedOption = (selectedOption == 0) ? menuItems.Count - 1 : selectedOption - 1;
                     break;
                 case ConsoleKey.Enter:
-                    isSelectedInMenu = true;
-                    
-                    switch (option)
-                    {
-                        case 1:
-                            // This starts the game.
-                            StartGameMenu();
-                            break;
-                        case 2:
-                            // This is credit.
-                            break;
-                        case 3:
-                            break;
-                    }
+                    isSelected = true;
                     break;
+            }
+        }
+        
+        return selectedOption;
+    }
+
+    private void ShowMainMenu()
+    {
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Start Game", ShowGameMenu),
+            new MenuItem("Credits", ShowCredits),
+            new MenuItem("Exit Game", ExitGame)
+        };
+
+        while (_isGameRunning)
+        {
+            int selection = ShowMenu("           Interactive Pet Simulator", menuItems, 
+                "Use up and down arrow keys to navigate and enter to select.");
+            
+            menuItems[selection].Action.Invoke();
+            
+            // Exit the loop if user chose to exit
+            if (selection == 2) break;
+        }
+    }
+
+    private void ShowGameMenu()
+    {
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Adopt Pet", ShowAdoptPetMenu),
+            new MenuItem("See Current Pets", ShowCurrentPetsMenu),
+            new MenuItem("See Current Items", ShowCurrentItemsMenu),
+            new MenuItem("Back To Main Menu", () => { /* Return to main menu */ })
+        };
+
+        bool stayInGameMenu = true;
+        while (stayInGameMenu)
+        {
+            int selection = ShowMenu("Game Menu", menuItems);
+            
+            if (selection == 3) // Back to main menu
+            {
+                stayInGameMenu = false;
+            }
+            else
+            {
+                menuItems[selection].Action.Invoke();
             }
         }
     }
 
-
-    private void StartGameMenu()
+    private void ShowAdoptPetMenu()
     {
-        int option = 1;
-        Console.Clear();
-        bool isSelectedInMenu = false;
-        // _isSelectedInGameMenu = false;
-        while (!isSelectedInMenu)
+        var menuItems = new List<MenuItem>();
+        
+        // Add pets to menu
+        foreach (var pet in _petInventoryManager.AdoptablePets)
         {
-            Console.SetCursorPosition(_left, _top);
+            menuItems.Add(new MenuItem(pet.Name, () => ConfirmAdoptPet(pet)));
+        }
+        
+        menuItems.Add(new MenuItem("Back", () => {  }));
+
+        bool stayInAdoptMenu = true;
+        while (stayInAdoptMenu)
+        {
+            int selection = ShowMenu("Choose a Pet to Adopt", menuItems);
             
-            Console.WriteLine($"{(option == 1 ? ColorRed : DefaultColor)}Adopt Pet{DefaultColor}");
-            Console.WriteLine($"{(option == 2 ? ColorRed : DefaultColor)}See Current Pets{DefaultColor}");
-            Console.WriteLine($"{(option == 3 ? ColorRed : DefaultColor)}See Current Items\n{DefaultColor}");
-            Console.WriteLine($"{(option == 4 ? ColorRed : DefaultColor)}Back To Main Menu{DefaultColor}");
-            
-            _key = Console.ReadKey(false);
-            
-            switch (_key.Key)
+            if (selection == menuItems.Count - 1) // Back option
             {
-                case ConsoleKey.DownArrow:
-                    option = (option == 4 ? 1 : option + 1);
-                    break;
-                case ConsoleKey.UpArrow:
-                    option = (option == 1 ? 4 : option - 1);
-                    break;
-                case ConsoleKey.Enter:
-                    isSelectedInMenu = true;
-                    
-                    switch (option)
-                    {
-                        case 1:
-                            //adopt pet menu
-                            AdoptingPetMenu();
-                            break;
-                        case 2:
-                            //see current pets menu
-                            break;
-                        case 3:
-                            //see current items menu
-                            break;
-                        case 4:
-                            MainMenu();
-                            break;
-                    }
-                    break;
+                stayInAdoptMenu = false;
+            }
+            else
+            {
+                menuItems[selection].Action.Invoke();
+                stayInAdoptMenu = false;
             }
         }
+    }
+
+    private void ConfirmAdoptPet(Pet pet)
+    {
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Yes", () => AdoptPet(pet)),
+            new MenuItem("No", () => {  })
+        };
+
+        int selection = ShowMenu($"You will adopt {pet.Name}", menuItems);
+        menuItems[selection].Action.Invoke();
+    }
+
+    private void AdoptPet(Pet pet)
+    {
+        _petInventoryManager.AdoptPet(pet);
+        
+        Console.Clear();
+        Console.WriteLine($"{Colors.Cyan}You adopted {pet.Name}!!{Colors.Default}");
+        Console.WriteLine("Press any key to back to main menu...");
+        Console.ReadKey();
+        ShowAdoptPetMenu();
+    }
+
+    private void ShowCurrentPetsMenu()
+    {
+        if (_petInventoryManager.CurrentPets.Count == 0)
+        {
+            Console.Clear();
+            Console.WriteLine($"{Colors.Cyan}You don't have any pets yet!{Colors.Default}");
+            Console.WriteLine("Press any key to back to main menu...");
+            Console.ReadKey();
+            return;
+        }
+
+        var menuItems = new List<MenuItem>();
+        
+        // Add current pets to menu
+        foreach (var pet in _petInventoryManager.CurrentPets)
+        {
+            menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
+        }
+        
+        menuItems.Add(new MenuItem("Back", () => {  }));
+
+        bool stayInPetsMenu = true;
+        while (stayInPetsMenu)
+        {
+            int selection = ShowMenu("Your Current Pets", menuItems);
+            
+            if (selection == menuItems.Count - 1) // Back option
+            {
+                stayInPetsMenu = false;
+            }
+            else
+            {
+                menuItems[selection].Action.Invoke();
+                stayInPetsMenu = false; // For refreshing the menu
+            }
+        }
+    }
+
+    private void ShowPetOptions(Pet pet)
+    {
+        // Placeholder for pet interaction options
+        Console.Clear();
+        var menuItems = new List<MenuItem>();
+        menuItems.Add(new MenuItem($"Feed {pet.Name}",() => {FeedPet(pet);}));
+        menuItems.Add(new MenuItem($"Play with {pet.Name}",() => {PlayWithPet(pet);}));
+        menuItems.Add(new MenuItem($"Use Item", () => { }));
+        menuItems.Add(new MenuItem($"Back", () => { }));
+        
+        bool stayInPetOptionsMenu = true;
+        while (stayInPetOptionsMenu)
+        {
+            int selection = ShowMenu($"{pet.Name}", menuItems);
+            if (selection == menuItems.Count - 1) // Back option
+            {
+                stayInPetOptionsMenu = false; 
+                ShowCurrentPetsMenu(); // For refreshing the menu
+            }
+              
+            else
+                menuItems[selection].Action.Invoke();
+            
+        }
+    }
+
+    private void FeedPet(Pet pet)
+    {
+        _petCareManager.Feed(pet, 10);
+    }
+
+    private void PlayWithPet(Pet pet)
+    {
+        _petCareManager.Play(pet, 10);
     }
     
-    private void AdoptingPetMenu()
+    private void UseItem(Pet pet)// I will add item here
     {
-        int option = 1;
+        
+    }
+
+    private void ShowCurrentItemsMenu()
+    {
+        // Placeholder for items menu
         Console.Clear();
-        bool isSelectedInMenu = false;
-        while (!isSelectedInMenu)
-        {
-            Console.SetCursorPosition(_left, _top);
-            
-            // Add every adoptable pet to the menu.
-            for (int i = 1; i < _petInventoryManager.AdoptablePets.Count; i++)
-            {
-                Console.WriteLine($"{(option == i ? ColorRed : DefaultColor)}{_petInventoryManager.AdoptablePets[i].Name}{DefaultColor}");
-            }
-            Console.WriteLine($"{(option == _petInventoryManager.AdoptablePets.Count ? ColorRed : DefaultColor)}Back{DefaultColor}");
-            
-            _key = Console.ReadKey(false);
-            
-            switch (_key.Key)
-            {
-                case ConsoleKey.DownArrow:
-                    option = (option == _petInventoryManager.AdoptablePets.Count ? 1 : option + 1);
-                    break;
-                case ConsoleKey.UpArrow:
-                    option = (option == 1 ? _petInventoryManager.AdoptablePets.Count : option - 1);
-                    break;
-                case ConsoleKey.Enter:
-                    isSelectedInMenu = true;
-                    
-                    if(option >= _petInventoryManager.AdoptablePets.Count)
-                        StartGameMenu();
-                    
-                    for (int i = 1; i < _petInventoryManager.AdoptablePets.Count; i++)
-                    {
-                        if (option == i)
-                        {
-                            Console.WriteLine($"You get {_petInventoryManager.AdoptablePets[i].Name}");
-                        }
-                    }
-                    break;
-            }
-        }
+        Console.WriteLine($"{Colors.Cyan}Current Items Menu{Colors.Default}");
+        Console.WriteLine("Items display would go here.");
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+    }
+
+    private void ShowCredits()
+    {
+        Console.Clear();
+        Console.WriteLine($"{Colors.Magenta}Credits{Colors.Default}");
+        Console.WriteLine("Created by: Burak Bisneli");
+        Console.WriteLine("Tutorial reference for menu: https://www.youtube.com/watch?v=YyD1MRJY0qI");
+        Console.WriteLine("Used LLM's: Claude Sonnet 4, ChatGPT (for getting idea and asking things that i don't know)");
+        Console.WriteLine("\nPress any key to continue...");
+        Console.ReadKey();
+    }
+
+    private void ExitGame()
+    {
+        Console.Clear();
+        Console.WriteLine($"{Colors.Cyan}Made by Burak Bisneli.{Colors.Default}");
+        _isGameRunning = false;
     }
 }

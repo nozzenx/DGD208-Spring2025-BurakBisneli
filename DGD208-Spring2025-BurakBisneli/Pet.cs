@@ -6,7 +6,7 @@ public class Pet
     
     public int Hunger { get; private set; } = 50;
     private int _sleep = 50;
-    private int _fun = 50;
+    public int Fun = 50;
 
     public Pet(string name)
     {
@@ -18,7 +18,7 @@ public class Pet
         Console.WriteLine($"{Name}");
         Console.WriteLine($"HUNGER : {Hunger}");
         Console.WriteLine($"SLEEP : {_sleep}");
-        Console.WriteLine($"FUN : {_fun}");
+        Console.WriteLine($"FUN : {Fun}");
     }
     
     public void IncreaseHunger(int amount)
@@ -59,19 +59,19 @@ public class Pet
 
     public void IncreaseFun(int amount)
     {
-        if(_fun + amount <= 100)
-            _fun += amount;
+        if(Fun + amount <= 100)
+            Fun += amount;
         else
-            _fun = 100;
+            Fun = 100;
         
     }
 
     public void DecreaseFun(int amount)
     {
-        if(_fun - amount >= 0)
-            _fun -= amount;
+        if(Fun - amount >= 0)
+            Fun -= amount;
         else
-            _fun = 0;
+            Fun = 0;
         
     }
 }
