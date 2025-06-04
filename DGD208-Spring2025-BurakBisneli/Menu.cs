@@ -251,7 +251,8 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void ShowCurrentItemsMenu(Pet pet)
     {
-        if (PetInventoryManager.CurrentItems.Count == 0)
+        Console.Clear();
+        if (ItemDatabase.AllItems.Count == 0)
         {
             Console.Clear();
             Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
@@ -263,9 +264,9 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (var item in PetInventoryManager.CurrentItems)
+        foreach (var item in ItemDatabase.AllItems)
         {
-            menuItems.Add(new MenuItem($"{item.Name} {item.Description}", () => ConfirmUsingItem(item, pet)));
+            menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => ConfirmUsingItem(item, pet)));
         }
         
         menuItems.Add(new MenuItem("Back", () => {  }));
@@ -296,13 +297,12 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             new MenuItem("No", () => {  })
         };
 
-        int selection = ShowMenu($"You will use {item.Name} {item.Description}", menuItems);
+        int selection = ShowMenu($"You will use {item.Name} (+{item.EffectAmount} {item.AffectedStat})", menuItems);
         menuItems[selection].Action.Invoke();
     }
     
     private void UseItem(Item item, Pet pet)
     {
-        item.Use(pet);
         Console.Clear();
         Console.WriteLine($"{Colors.Cyan}You used {item.Name}!!{Colors.Default}");
         Console.WriteLine("Press any key to back to main menu...");
@@ -312,7 +312,8 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     
     private void ShowCurrentItemsMenu()
     {
-        if (PetInventoryManager.CurrentItems.Count == 0)
+        Console.Clear();
+        if (ItemDatabase.AllItems.Count == 0)
         {
             Console.Clear();
             Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
@@ -324,9 +325,9 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (var item in PetInventoryManager.CurrentItems)
+        foreach (Item item in ItemDatabase.AllItems)
         {
-            menuItems.Add(new MenuItem($"{item.Name} {item.Description}", () => { })); 
+            menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => { })); 
         }
         
         

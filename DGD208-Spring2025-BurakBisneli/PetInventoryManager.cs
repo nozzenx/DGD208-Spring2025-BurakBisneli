@@ -1,6 +1,4 @@
-﻿using DGD208_Spring2025_BurakBisneli.Items;
-
-namespace DGD208_Spring2025_BurakBisneli;
+﻿namespace DGD208_Spring2025_BurakBisneli;
 
 public static class PetInventoryManager
 {
@@ -8,7 +6,6 @@ public static class PetInventoryManager
     
     public static List<Pet> CurrentPets = new List<Pet>();
     
-    public static List<Item> CurrentItems = new List<Item>();
 
     static PetInventoryManager()
     {
@@ -17,9 +14,7 @@ public static class PetInventoryManager
     
     private static void AddItemAndPetsForTest()
     {
-        Item comb = new Comb("Comb","(+15 FUN)",0, 15, 2);
         
-        CurrentItems.Add(comb);
         
         Pet cat = new Pet("Cat");
         Pet dog = new Pet("Dog");
