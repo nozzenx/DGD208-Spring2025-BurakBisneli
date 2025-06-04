@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace DGD208_Spring2025_BurakBisneli;
+﻿namespace DGD208_Spring2025_BurakBisneli;
 
 public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this tutorial to achieve the base menu and used Claude Sonnet 4 to get ideas to adapt it myself.
 {
@@ -76,7 +74,8 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         return selectedOption;
     }
 
-    private void ShowMainMenu()
+    
+    private async Task ShowMainMenu()
     {
         var menuItems = new List<MenuItem>
         {
@@ -177,7 +176,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void ShowCurrentPetsMenu()
     {
-        if (PetCareManager.CurrentPets.Count == 0)
+        if (PetInventoryManager.CurrentPets.Count == 0)
         {
             Console.Clear();
             Console.WriteLine($"{Colors.Cyan}You don't have any pets yet!{Colors.Default}");
@@ -189,7 +188,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (Pet pet in PetCareManager.CurrentPets)
+        foreach (Pet pet in PetInventoryManager.CurrentPets)
         {
             menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
         }
@@ -217,8 +216,8 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     {
         Console.Clear();
         var menuItems = new List<MenuItem>();
-        menuItems.Add(new MenuItem($"Feed {pet.Name}",() => {FeedPet(pet);}));
-        menuItems.Add(new MenuItem($"Play with {pet.Name}",() => {PlayWithPet(pet);}));
+        menuItems.Add(new MenuItem($"Feed {pet.Name}",() => {ConfirmFeedPet(pet);}));
+        menuItems.Add(new MenuItem($"Play with {pet.Name}",() => {ConfirmPlayPet(pet);}));
         menuItems.Add(new MenuItem($"Use Item", () => {ShowCurrentItemsMenu(pet);}));
         menuItems.Add(new MenuItem($"Back", () => { }));
         
@@ -231,21 +230,81 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
                 stayInPetOptionsMenu = false; 
                 ShowCurrentPetsMenu(); // For refreshing the menu
             }
-              
+
             else
+            {
                 menuItems[selection].Action.Invoke();
+                stayInPetOptionsMenu = false;
+            }
             
         }
     }
-
-    private void FeedPet(Pet pet)
+    private void ConfirmFeedPet(Pet pet)
     {
-       
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Yes", () => FeedPet(pet)),
+            new MenuItem("No", () => {  })
+        };
+
+        int selection = ShowMenu($"You will feed {pet.Name} Duration: 3s", menuItems);
+        menuItems[selection].Action.Invoke();
+    }
+    
+    private void ConfirmPlayPet(Pet pet)
+    {
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Yes", () => PlayWithPet(pet)),
+            new MenuItem("No", () => {  })
+        };
+
+        int selection = ShowMenu($"You will play {pet.Name} Duration: 3s", menuItems);
+        menuItems[selection].Action.Invoke();
     }
 
-    private void PlayWithPet(Pet pet)
+    private async void FeedPet(Pet pet)
     {
-        
+        Console.Clear();
+        Console.WriteLine($"Starting to feed {pet.Name}...");
+    
+        bool success = await PetCareManager.FeedPet(pet);
+    
+        if (success)
+        {
+            Console.WriteLine("\n--------------------------------------");
+            Console.WriteLine($"{Colors.Cyan}Successfully fed {pet.Name}!{Colors.Default}");
+            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+        }
+        else
+        {
+            Console.WriteLine($"{Colors.Red}Could not feed {pet.Name} - another action is in progress!{Colors.Default}");
+        }
+    
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+    }
+
+    private async void PlayWithPet(Pet pet)
+    {
+        Console.Clear();
+        Console.WriteLine($"Starting to play with {pet.Name}...");
+    
+        bool success = await PetCareManager.PlayWithPet(pet);
+    
+        if (success)
+        {
+            Console.WriteLine("\n--------------------------------------");
+            Console.WriteLine($"{Colors.Cyan}Successfully played with {pet.Name}!{Colors.Default}");
+            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+        }
+        else
+        {
+            Console.WriteLine($"{Colors.Red}Could not play with {pet.Name} - another action is in progress!{Colors.Default}");
+        }
+    
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
     
 
@@ -266,7 +325,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         // Add current pets to menu
         foreach (Item item in ItemDatabase.AllItems)
         {
-            if(item.CompatibleWith.Contains(pet.Type)) // This line makes it just show items can use with specific pet.
+            if(item.CompatibleWith.Contains(pet.Type)) // This line makes it just show items can use it with specific pet.
                 menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => ConfirmUsingItem(item, pet)));
         }
         
@@ -301,11 +360,25 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         menuItems[selection].Action.Invoke();
     }
     
-    private void UseItem(Item item, Pet pet)
+    private async void UseItem(Item item, Pet pet)
     {
         Console.Clear();
-        Console.WriteLine($"{Colors.Cyan}You used {item.Name}!!{Colors.Default}");
-        Console.WriteLine("Press any key to back to main menu...");
+        Console.WriteLine($"Starting to use {item.Name} on {pet.Name}...");
+    
+        bool success = await PetCareManager.UseItem(pet, item);
+    
+        if (success)
+        {
+            Console.WriteLine("\n--------------------------------------");
+            Console.WriteLine($"{Colors.Cyan}Successfully used {item.Name}!{Colors.Default}");
+            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+        }
+        else
+        {
+            Console.WriteLine($"{Colors.Red}Could not use {item.Name} - another action is in progress!{Colors.Default}");
+        }
+    
+        Console.WriteLine("Press any key to continue...");
         Console.ReadKey();
         ShowCurrentItemsMenu(pet);
     }

@@ -5,7 +5,9 @@ var menu = new Menu();
 
 async Task Main()
 {
-    menu.StartMenu();
+    PetCareManager.StartStatDecay();
+    
+    menu.StartMenu(); 
 }
 
 await Main();
