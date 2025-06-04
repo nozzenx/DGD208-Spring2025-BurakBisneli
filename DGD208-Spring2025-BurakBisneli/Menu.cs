@@ -225,7 +225,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         bool stayInPetOptionsMenu = true;
         while (stayInPetOptionsMenu)
         {
-            int selection = ShowMenu($"{pet.Name}", menuItems);
+            int selection = ShowMenu($"{pet.Name} | Hunger: {pet.Hunger} | Fun: {pet.Fun}", menuItems);
             if (selection == menuItems.Count - 1) // Back option
             {
                 stayInPetOptionsMenu = false; 
@@ -265,7 +265,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         // Add current pets to menu
         foreach (var item in PetInventoryManager.CurrentItems)
         {
-            menuItems.Add(new MenuItem($"{item}", () => ConfirmUsingItem(item, pet)));
+            menuItems.Add(new MenuItem($"{item.Name} {item.Description}", () => ConfirmUsingItem(item, pet)));
         }
         
         menuItems.Add(new MenuItem("Back", () => {  }));
@@ -296,7 +296,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             new MenuItem("No", () => {  })
         };
 
-        int selection = ShowMenu($"You will use {item}", menuItems);
+        int selection = ShowMenu($"You will use {item.Name} {item.Description}", menuItems);
         menuItems[selection].Action.Invoke();
     }
     
@@ -304,7 +304,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     {
         item.Use(pet);
         Console.Clear();
-        Console.WriteLine($"{Colors.Cyan}You used {item}!!{Colors.Default}");
+        Console.WriteLine($"{Colors.Cyan}You used {item.Name}!!{Colors.Default}");
         Console.WriteLine("Press any key to back to main menu...");
         Console.ReadKey();
         ShowCurrentItemsMenu(pet);
@@ -326,7 +326,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         // Add current pets to menu
         foreach (var item in PetInventoryManager.CurrentItems)
         {
-            menuItems.Add(new MenuItem($"{item}", () => { })); 
+            menuItems.Add(new MenuItem($"{item.Name} {item.Description}", () => { })); 
         }
         
         

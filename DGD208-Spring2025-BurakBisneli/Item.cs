@@ -2,13 +2,17 @@
 
 public abstract class Item
 {
+    public readonly string Name;
+    public readonly string Description;
     protected int HungerAmount;
     protected int FunAmount;
     protected int UsingTime;
 
 
-    protected Item(int hungerAmount, int funAmount, int usingTime)
+    protected Item(string name, string description, int hungerAmount, int funAmount, int usingTime)
     {
+        Name = name;
+        Description = description;
         HungerAmount = hungerAmount;
         FunAmount = funAmount;
         UsingTime = usingTime;

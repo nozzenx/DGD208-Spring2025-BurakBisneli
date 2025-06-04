@@ -17,7 +17,7 @@ public static class PetInventoryManager
     
     private static void AddItemAndPetsForTest()
     {
-        Item comb = new Comb(0, 15, 2);
+        Item comb = new Comb("Comb","(+15 FUN)",0, 15, 2);
         
         CurrentItems.Add(comb);
         

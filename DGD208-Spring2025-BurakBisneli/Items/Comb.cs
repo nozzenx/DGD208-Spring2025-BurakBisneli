@@ -2,7 +2,7 @@
 
 public class Comb : Item
 {
-    public Comb(int hungerAmount, int funAmount, int usingTime) : base(hungerAmount, funAmount, usingTime)
+    public Comb(string name, string description, int hungerAmount, int funAmount, int usingTime) : base(name, description, hungerAmount, funAmount, usingTime)
     {
     }
 
