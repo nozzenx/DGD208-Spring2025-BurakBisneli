@@ -16,7 +16,6 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     }
     
     private int _left, _top;
-    private PetInventoryManager _petInventoryManager = new PetInventoryManager();
     private PetCareManager _petCareManager = new PetCareManager();
     
     public void StartMenu()
@@ -129,7 +128,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add pets to menu
-        foreach (var pet in _petInventoryManager.AdoptablePets)
+        foreach (var pet in PetInventoryManager.AdoptablePets)
         {
             menuItems.Add(new MenuItem(pet.Name, () => ConfirmAdoptPet(pet)));
         }
@@ -167,7 +166,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void AdoptPet(Pet pet)
     {
-        _petInventoryManager.AdoptPet(pet);
+        PetInventoryManager.AdoptPet(pet);
         
         Console.Clear();
         Console.WriteLine($"{Colors.Cyan}You adopted {pet.Name}!!{Colors.Default}");
@@ -178,7 +177,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void ShowCurrentPetsMenu()
     {
-        if (_petInventoryManager.CurrentPets.Count == 0)
+        if (PetInventoryManager.CurrentPets.Count == 0)
         {
             Console.Clear();
             Console.WriteLine($"{Colors.Cyan}You don't have any pets yet!{Colors.Default}");
@@ -190,7 +189,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (var pet in _petInventoryManager.CurrentPets)
+        foreach (var pet in PetInventoryManager.CurrentPets)
         {
             menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
         }
@@ -216,12 +215,11 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void ShowPetOptions(Pet pet)
     {
-        // Placeholder for pet interaction options
         Console.Clear();
         var menuItems = new List<MenuItem>();
         menuItems.Add(new MenuItem($"Feed {pet.Name}",() => {FeedPet(pet);}));
         menuItems.Add(new MenuItem($"Play with {pet.Name}",() => {PlayWithPet(pet);}));
-        menuItems.Add(new MenuItem($"Use Item", () => { }));
+        menuItems.Add(new MenuItem($"Use Item", () => {ShowCurrentItemsMenu(pet);}));
         menuItems.Add(new MenuItem($"Back", () => { }));
         
         bool stayInPetOptionsMenu = true;
@@ -250,19 +248,105 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         _petCareManager.Play(pet, 10);
     }
     
-    private void UseItem(Pet pet)// I will add item here
-    {
-        
-    }
 
+    private void ShowCurrentItemsMenu(Pet pet)
+    {
+        if (PetInventoryManager.CurrentItems.Count == 0)
+        {
+            Console.Clear();
+            Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
+            Console.WriteLine("Press any key to back to main menu...");
+            Console.ReadKey();
+            return;
+        }
+
+        var menuItems = new List<MenuItem>();
+        
+        // Add current pets to menu
+        foreach (var item in PetInventoryManager.CurrentItems)
+        {
+            menuItems.Add(new MenuItem($"{item}", () => ConfirmUsingItem(item, pet)));
+        }
+        
+        menuItems.Add(new MenuItem("Back", () => {  }));
+
+        bool stayInPetsItemsMenu = true;
+        while (stayInPetsItemsMenu)
+        {
+            int selection = ShowMenu("Your Current Items", menuItems);
+            
+            if (selection == menuItems.Count - 1) // Back option
+            {
+                stayInPetsItemsMenu = false;
+                ShowPetOptions(pet);
+            }
+            else
+            {
+                menuItems[selection].Action.Invoke();
+                stayInPetsItemsMenu = false;
+            }
+        }
+    }
+    
+    private void ConfirmUsingItem(Item item,Pet pet)
+    {
+        var menuItems = new List<MenuItem>
+        {
+            new MenuItem("Yes", () => UseItem(item, pet)),
+            new MenuItem("No", () => {  })
+        };
+
+        int selection = ShowMenu($"You will use {item}", menuItems);
+        menuItems[selection].Action.Invoke();
+    }
+    
+    private void UseItem(Item item, Pet pet)
+    {
+        item.Use(pet);
+        Console.Clear();
+        Console.WriteLine($"{Colors.Cyan}You used {item}!!{Colors.Default}");
+        Console.WriteLine("Press any key to back to main menu...");
+        Console.ReadKey();
+        ShowCurrentItemsMenu(pet);
+    }
+    
     private void ShowCurrentItemsMenu()
     {
-        // Placeholder for items menu
-        Console.Clear();
-        Console.WriteLine($"{Colors.Cyan}Current Items Menu{Colors.Default}");
-        Console.WriteLine("Items display would go here.");
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
+        if (PetInventoryManager.CurrentItems.Count == 0)
+        {
+            Console.Clear();
+            Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
+            Console.WriteLine("Press any key to back to main menu...");
+            Console.ReadKey();
+            return;
+        }
+
+        var menuItems = new List<MenuItem>();
+        
+        // Add current pets to menu
+        foreach (var item in PetInventoryManager.CurrentItems)
+        {
+            menuItems.Add(new MenuItem($"{item}", () => { })); 
+        }
+        
+        
+        menuItems.Add(new MenuItem("Back", () => {  }));
+
+        bool stayInPetsItemsMenu = true;
+        while (stayInPetsItemsMenu)
+        {
+            int selection = ShowMenu("Your Current Items", menuItems);
+            
+            if (selection == menuItems.Count - 1) // Back option
+            {
+                stayInPetsItemsMenu = false;
+            }
+            else
+            {
+                menuItems[selection].Action.Invoke();
+                stayInPetsItemsMenu = false; // For refreshing the menu
+            }
+        }
     }
 
     private void ShowCredits()

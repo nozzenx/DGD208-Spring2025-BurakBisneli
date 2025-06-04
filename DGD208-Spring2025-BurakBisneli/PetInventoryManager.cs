@@ -1,18 +1,26 @@
-﻿namespace DGD208_Spring2025_BurakBisneli;
+﻿using DGD208_Spring2025_BurakBisneli.Items;
 
-public class PetInventoryManager
+namespace DGD208_Spring2025_BurakBisneli;
+
+public static class PetInventoryManager
 {
-    public List<Pet> AdoptablePets = new List<Pet>();
+    public static List<Pet> AdoptablePets = new List<Pet>();
     
-    public List<Pet> CurrentPets = new List<Pet>();
+    public static List<Pet> CurrentPets = new List<Pet>();
+    
+    public static List<Item> CurrentItems = new List<Item>();
 
-    public PetInventoryManager()
+    static PetInventoryManager()
     {
-        AddPetsToAdoptablePetsForTest();
+        AddItemAndPetsForTest();
     }
     
-    private void AddPetsToAdoptablePetsForTest()
+    private static void AddItemAndPetsForTest()
     {
+        Item comb = new Comb(0, 15, 2);
+        
+        CurrentItems.Add(comb);
+        
         Pet cat = new Pet("Cat");
         Pet dog = new Pet("Dog");
         Pet pig = new Pet("Pig");
@@ -35,7 +43,7 @@ public class PetInventoryManager
         AdoptablePets.Add(chicken);
     }
 
-    public void AdoptPet(Pet pet)
+    public static void AdoptPet(Pet pet)
     {
         CurrentPets.Add(pet);
         AdoptablePets.Remove(pet);
