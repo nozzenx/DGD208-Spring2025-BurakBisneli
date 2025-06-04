@@ -16,7 +16,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     }
     
     private int _left, _top;
-    private PetCareManager _petCareManager = new PetCareManager();
+    
     
     public void StartMenu()
     {
@@ -104,7 +104,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             new MenuItem("Adopt Pet", ShowAdoptPetMenu),
             new MenuItem("See Current Pets", ShowCurrentPetsMenu),
             new MenuItem("See Current Items", ShowCurrentItemsMenu),
-            new MenuItem("Back To Main Menu", () => { /* Return to main menu */ })
+            new MenuItem("Back To Main Menu", () => {  })
         };
 
         bool stayInGameMenu = true;
@@ -128,9 +128,9 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add pets to menu
-        foreach (var pet in PetInventoryManager.AdoptablePets)
+        foreach (Pet pet in PetDatabase.Pets)
         {
-            menuItems.Add(new MenuItem(pet.Name, () => ConfirmAdoptPet(pet)));
+            menuItems.Add(new MenuItem($"{pet.Name} ({pet.Type})", () => ConfirmAdoptPet(pet)));
         }
         
         menuItems.Add(new MenuItem("Back", () => {  }));
@@ -177,7 +177,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void ShowCurrentPetsMenu()
     {
-        if (PetInventoryManager.CurrentPets.Count == 0)
+        if (PetCareManager.CurrentPets.Count == 0)
         {
             Console.Clear();
             Console.WriteLine($"{Colors.Cyan}You don't have any pets yet!{Colors.Default}");
@@ -189,9 +189,9 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (var pet in PetInventoryManager.CurrentPets)
+        foreach (Pet pet in PetCareManager.CurrentPets)
         {
-            menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
+            menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
         }
         
         menuItems.Add(new MenuItem("Back", () => {  }));
@@ -225,7 +225,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         bool stayInPetOptionsMenu = true;
         while (stayInPetOptionsMenu)
         {
-            int selection = ShowMenu($"{pet.Name} | Hunger: {pet.Hunger} | Fun: {pet.Fun}", menuItems);
+            int selection = ShowMenu($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", menuItems);
             if (selection == menuItems.Count - 1) // Back option
             {
                 stayInPetOptionsMenu = false; 
@@ -240,12 +240,12 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
 
     private void FeedPet(Pet pet)
     {
-        _petCareManager.Feed(pet, 10);
+       
     }
 
     private void PlayWithPet(Pet pet)
     {
-        _petCareManager.Play(pet, 10);
+        
     }
     
 
@@ -264,7 +264,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (var item in ItemDatabase.AllItems)
+        foreach (Item item in ItemDatabase.AllItems)
         {
             menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => ConfirmUsingItem(item, pet)));
         }
@@ -279,7 +279,6 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             if (selection == menuItems.Count - 1) // Back option
             {
                 stayInPetsItemsMenu = false;
-                ShowPetOptions(pet);
             }
             else
             {

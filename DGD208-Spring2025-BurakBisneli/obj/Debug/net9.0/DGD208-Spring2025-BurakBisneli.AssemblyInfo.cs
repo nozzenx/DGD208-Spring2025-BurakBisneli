@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DGD208-Spring2025-BurakBisneli")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df9d82ef43a2a94878b28bd22ddce242795b7687")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da46c6370c6ae1be0984a66e5ddd83fb17ab7922")]
 [assembly: System.Reflection.AssemblyProductAttribute("DGD208-Spring2025-BurakBisneli")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DGD208-Spring2025-BurakBisneli")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
