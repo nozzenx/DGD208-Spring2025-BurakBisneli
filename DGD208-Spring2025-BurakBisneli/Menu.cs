@@ -249,7 +249,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     }
     
 
-    private void ShowCurrentItemsMenu(Pet pet)
+    private void ShowCurrentItemsMenu(Pet pet) // This needs to show items that can use with specific pet.
     {
         Console.Clear();
         if (ItemDatabase.AllItems.Count == 0)
@@ -266,7 +266,8 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         // Add current pets to menu
         foreach (Item item in ItemDatabase.AllItems)
         {
-            menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => ConfirmUsingItem(item, pet)));
+            if(item.CompatibleWith.Contains(pet.Type)) // This line makes it just show items can use with specific pet.
+                menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => ConfirmUsingItem(item, pet)));
         }
         
         menuItems.Add(new MenuItem("Back", () => {  }));
