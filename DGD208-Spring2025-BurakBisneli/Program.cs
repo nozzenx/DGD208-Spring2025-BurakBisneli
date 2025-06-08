@@ -2,12 +2,11 @@
 
 var menu = new Menu();
 
+ // For the best experience, please turn the console all the way up otherwise, you may encounter bugs.
 
-async Task Main()
+void Main()
 {
-   
-    
     menu.StartMenu(); 
 }
 
-await Main();
+Main();
