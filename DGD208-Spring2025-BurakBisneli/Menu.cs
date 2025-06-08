@@ -181,7 +181,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>();
         
         // Add current pets to menu
-        foreach (Pet pet in PetInventoryManager.CurrentPets)
+        foreach (Pet pet in PetInventoryManager.SortWithLinq(PetInventoryManager.CurrentPets)) // order pets by hunger
         {
             menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
         }
