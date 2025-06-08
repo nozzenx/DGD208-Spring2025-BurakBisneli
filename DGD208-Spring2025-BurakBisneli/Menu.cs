@@ -1,4 +1,6 @@
-﻿namespace DGD208_Spring2025_BurakBisneli;
+﻿using System.Net.Mime;
+
+namespace DGD208_Spring2025_BurakBisneli;
 
 public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this tutorial to achieve the base menu and used Claude Sonnet 4 to get ideas to adapt it myself.
 {
@@ -51,7 +53,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             // Display menu items
             for (int i = 0; i < menuItems.Count; i++)
             {
-                string color = selectedOption == i ? Colors.Red : Colors.Default; // Changing the selected option color
+                string color = selectedOption == i ? Colors.Cyan : Colors.Default; // Changing the selected option color
                 Console.WriteLine($"{color}{menuItems[i].Text}{Colors.Default}");
             }
             
@@ -75,7 +77,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     }
 
     
-    private async Task ShowMainMenu()
+    private void ShowMainMenu() 
     {
         var menuItems = new List<MenuItem>
         {
@@ -84,16 +86,14 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             new MenuItem("Exit Game", ExitGame)
         };
 
-        while (_isGameRunning)
-        {
-            int selection = ShowMenu("           Interactive Pet Simulator", menuItems, 
-                "Use up and down arrow keys to navigate and enter to select.");
-            
-            menuItems[selection].Action.Invoke();
-            
-            // Exit the loop if user chose to exit
-            if (selection == 2) break;
-        }
+        
+        int selection = ShowMenu("           Interactive Pet Simulator", menuItems, 
+            "Use up and down arrow keys to navigate and enter to select.");
+        
+        menuItems[selection].Action.Invoke();
+        
+        
+        
     }
 
     private void ShowGameMenu()
@@ -106,20 +106,19 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             new MenuItem("Back To Main Menu", () => {  })
         };
 
-        bool stayInGameMenu = true;
-        while (stayInGameMenu)
+        
+        
+        int selection = ShowMenu("Game Menu", menuItems);
+        
+        if (selection == 3) // Back to main menu
         {
-            int selection = ShowMenu("Game Menu", menuItems);
-            
-            if (selection == 3) // Back to main menu
-            {
-                stayInGameMenu = false;
-            }
-            else
-            {
-                menuItems[selection].Action.Invoke();
-            }
+            ShowMainMenu();
         }
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+        
     }
 
     private void ShowAdoptPetMenu()
@@ -132,23 +131,20 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             menuItems.Add(new MenuItem($"{pet.Name} ({pet.Type})", () => ConfirmAdoptPet(pet)));
         }
         
-        menuItems.Add(new MenuItem("Back", () => {  }));
-
-        bool stayInAdoptMenu = true;
-        while (stayInAdoptMenu)
+        menuItems.Add(new MenuItem("Back", () => { ShowGameMenu(); }));
+        
+        
+        int selection = ShowMenu("Choose a Pet to Adopt", menuItems);
+        
+        if (selection == menuItems.Count - 1) // Back option
         {
-            int selection = ShowMenu("Choose a Pet to Adopt", menuItems);
-            
-            if (selection == menuItems.Count - 1) // Back option
-            {
-                stayInAdoptMenu = false;
-            }
-            else
-            {
-                menuItems[selection].Action.Invoke();
-                stayInAdoptMenu = false;
-            }
+            ShowGameMenu();
         }
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+       
     }
 
     private void ConfirmAdoptPet(Pet pet)
@@ -156,7 +152,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         var menuItems = new List<MenuItem>
         {
             new MenuItem("Yes", () => AdoptPet(pet)),
-            new MenuItem("No", () => {  })
+            new MenuItem("No", () => { ShowAdoptPetMenu(); })
         };
 
         int selection = ShowMenu($"You will adopt {pet.Name}", menuItems);
@@ -182,6 +178,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             Console.WriteLine($"{Colors.Cyan}You don't have any pets yet!{Colors.Default}");
             Console.WriteLine("Press any key to back to main menu...");
             Console.ReadKey();
+            ShowGameMenu();
             return;
         }
 
@@ -193,23 +190,20 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             menuItems.Add(new MenuItem($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", () => ShowPetOptions(pet)));
         }
         
-        menuItems.Add(new MenuItem("Back", () => {  }));
+        menuItems.Add(new MenuItem("Back", () => { ShowGameMenu(); }));
 
-        bool stayInPetsMenu = true;
-        while (stayInPetsMenu)
+        
+        int selection = ShowMenu("Your Current Pets", menuItems);
+        
+        if (selection == menuItems.Count - 1) // Back option
         {
-            int selection = ShowMenu("Your Current Pets", menuItems);
-            
-            if (selection == menuItems.Count - 1) // Back option
-            {
-                stayInPetsMenu = false;
-            }
-            else
-            {
-                menuItems[selection].Action.Invoke();
-                stayInPetsMenu = false; // For refreshing the menu
-            }
+            ShowGameMenu();
         }
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+        
     }
 
     private void ShowPetOptions(Pet pet)
@@ -221,33 +215,30 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         menuItems.Add(new MenuItem($"Use Item", () => {ShowCurrentItemsMenu(pet);}));
         menuItems.Add(new MenuItem($"Back", () => { }));
         
-        bool stayInPetOptionsMenu = true;
-        while (stayInPetOptionsMenu)
+        
+        
+        int selection = ShowMenu($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", menuItems);
+        if (selection == menuItems.Count - 1) // Back option
         {
-            int selection = ShowMenu($"{pet.Name} | Hunger: {pet.Hunger} | Sleep: {pet.Sleep} | Fun: {pet.Fun}", menuItems);
-            if (selection == menuItems.Count - 1) // Back option
-            {
-                stayInPetOptionsMenu = false; 
-                ShowCurrentPetsMenu(); // For refreshing the menu
-            }
-
-            else
-            {
-                menuItems[selection].Action.Invoke();
-                stayInPetOptionsMenu = false;
-            }
-            
+            ShowCurrentPetsMenu(); 
         }
+
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+        
     }
+    
     private void ConfirmFeedPet(Pet pet)
     {
         var menuItems = new List<MenuItem>
         {
-            new MenuItem("Yes", () => FeedPet(pet)),
-            new MenuItem("No", () => {  })
+            new MenuItem("Yes", () => FeedPet(pet).Wait()),
+            new MenuItem("No", () => { ShowPetOptions(pet); })
         };
 
-        int selection = ShowMenu($"You will feed {pet.Name} Duration: 3s", menuItems);
+        int selection = ShowMenu($"You will feed {pet.Name} (+20 Hunger, -10 Sleep) Duration: 3s", menuItems);
         menuItems[selection].Action.Invoke();
     }
     
@@ -255,56 +246,43 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     {
         var menuItems = new List<MenuItem>
         {
-            new MenuItem("Yes", () => PlayWithPet(pet)),
-            new MenuItem("No", () => {  })
+            new MenuItem("Yes", () => PlayWithPet(pet).Wait()),
+            new MenuItem("No", () => { ShowPetOptions(pet); })
         };
 
-        int selection = ShowMenu($"You will play {pet.Name} Duration: 3s", menuItems);
+        int selection = ShowMenu($"You will play with {pet.Name} (+20 Fun, -15 Hunger, -15 Sleep) Duration: 3s", menuItems);
         menuItems[selection].Action.Invoke();
     }
 
-    private async void FeedPet(Pet pet)
+    private async Task FeedPet(Pet pet)
     {
-        Console.Clear();
-        Console.WriteLine($"Starting to feed {pet.Name}...");
-    
-        bool success = await PetCareManager.FeedPet(pet);
-    
-        if (success)
+        
+        bool feeding = true;
+        while (feeding)
         {
-            Console.WriteLine("\n--------------------------------------");
-            Console.WriteLine($"{Colors.Cyan}Successfully fed {pet.Name}!{Colors.Default}");
-            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+            Console.Clear();
+            Console.WriteLine("Feeding pet");
+            await PetCareManager.FeedPet(pet);
+            Console.WriteLine("Pet fed.");
+            feeding = false;
         }
-        else
-        {
-            Console.WriteLine($"{Colors.Red}Could not feed {pet.Name} - another action is in progress!{Colors.Default}");
-        }
-    
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
+        ShowPetOptions(pet);
+        
+        
     }
 
-    private async void PlayWithPet(Pet pet)
+    private async Task PlayWithPet(Pet pet)
     {
-        Console.Clear();
-        Console.WriteLine($"Starting to play with {pet.Name}...");
-    
-        bool success = await PetCareManager.PlayWithPet(pet);
-    
-        if (success)
+        bool playing = true;
+        while (playing)
         {
-            Console.WriteLine("\n--------------------------------------");
-            Console.WriteLine($"{Colors.Cyan}Successfully played with {pet.Name}!{Colors.Default}");
-            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+            Console.Clear();
+            Console.WriteLine("Playing with pet");
+            await PetCareManager.PlayWithPet(pet);
+            Console.WriteLine("Pet played.");
+            playing = false;
         }
-        else
-        {
-            Console.WriteLine($"{Colors.Red}Could not play with {pet.Name} - another action is in progress!{Colors.Default}");
-        }
-    
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
+        ShowPetOptions(pet);
     }
     
 
@@ -317,6 +295,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
             Console.WriteLine("Press any key to back to main menu...");
             Console.ReadKey();
+            ShowGameMenu();
             return;
         }
 
@@ -331,56 +310,47 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         
         menuItems.Add(new MenuItem("Back", () => {  }));
 
-        bool stayInPetsItemsMenu = true;
-        while (stayInPetsItemsMenu)
+       
+        
+        int selection = ShowMenu("Your Current Items", menuItems);
+        
+        if (selection == menuItems.Count - 1) // Back option
         {
-            int selection = ShowMenu("Your Current Items", menuItems);
-            
-            if (selection == menuItems.Count - 1) // Back option
-            {
-                stayInPetsItemsMenu = false;
-            }
-            else
-            {
-                menuItems[selection].Action.Invoke();
-                stayInPetsItemsMenu = false;
-            }
+            ShowPetOptions(pet);
         }
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+        
     }
     
     private void ConfirmUsingItem(Item item,Pet pet)
     {
         var menuItems = new List<MenuItem>
         {
-            new MenuItem("Yes", () => UseItem(item, pet)),
-            new MenuItem("No", () => {  })
+            new MenuItem("Yes", () => UseItem(item, pet).Wait()),
+            new MenuItem("No", () => { ShowPetOptions(pet); })
         };
 
-        int selection = ShowMenu($"You will use {item.Name} (+{item.EffectAmount} {item.AffectedStat})", menuItems);
+        int selection = ShowMenu($"You will use {item.Name} (+{item.EffectAmount} {item.AffectedStat}) Duration: {item.Duration}", menuItems);
         menuItems[selection].Action.Invoke();
     }
     
-    private async void UseItem(Item item, Pet pet)
+    private async Task UseItem(Item item, Pet pet)
     {
-        Console.Clear();
-        Console.WriteLine($"Starting to use {item.Name} on {pet.Name}...");
-    
-        bool success = await PetCareManager.UseItem(pet, item);
-    
-        if (success)
+        bool usingItem = true;
+        while (usingItem)
         {
-            Console.WriteLine("\n--------------------------------------");
-            Console.WriteLine($"{Colors.Cyan}Successfully used {item.Name}!{Colors.Default}");
-            Console.WriteLine($"New stats - Hunger: {pet.Hunger}, Sleep: {pet.Sleep}, Fun: {pet.Fun}");
+            Console.Clear();
+            Console.WriteLine($"Using {item.Name} (+{item.EffectAmount} {item.AffectedStat})");
+            await PetCareManager.UseItem(pet, item);
+            Console.WriteLine($"{item.Name} used.");
+            ItemDatabase.AllItems.Remove(item);
+            usingItem = false;
         }
-        else
-        {
-            Console.WriteLine($"{Colors.Red}Could not use {item.Name} - another action is in progress!{Colors.Default}");
-        }
-    
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
-        ShowCurrentItemsMenu(pet);
+        ShowPetOptions(pet);
+        
     }
     
     private void ShowCurrentItemsMenu()
@@ -392,6 +362,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             Console.WriteLine($"{Colors.Cyan}You don't have any items!{Colors.Default}");
             Console.WriteLine("Press any key to back to main menu...");
             Console.ReadKey();
+            ShowGameMenu();
             return;
         }
 
@@ -400,27 +371,25 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         // Add current pets to menu
         foreach (Item item in ItemDatabase.AllItems)
         {
-            menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => { })); 
+            menuItems.Add(new MenuItem($"{item.Name} (+{item.EffectAmount} {item.AffectedStat})", () => { ShowGameMenu();})); 
         }
         
         
-        menuItems.Add(new MenuItem("Back", () => {  }));
+        menuItems.Add(new MenuItem("Back", () => { ShowGameMenu(); }));
 
         bool stayInPetsItemsMenu = true;
-        while (stayInPetsItemsMenu)
+        
+        int selection = ShowMenu("Your Current Items", menuItems);
+        
+        if (selection == menuItems.Count - 1) // Back option
         {
-            int selection = ShowMenu("Your Current Items", menuItems);
-            
-            if (selection == menuItems.Count - 1) // Back option
-            {
-                stayInPetsItemsMenu = false;
-            }
-            else
-            {
-                menuItems[selection].Action.Invoke();
-                stayInPetsItemsMenu = false; // For refreshing the menu
-            }
+            ShowGameMenu();
         }
+        else
+        {
+            menuItems[selection].Action.Invoke();
+        }
+        
     }
 
     private void ShowCredits()
@@ -432,12 +401,13 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
         Console.WriteLine("Used LLM's: Claude Sonnet 4, ChatGPT (for getting idea and asking things that i don't know)");
         Console.WriteLine("\nPress any key to continue...");
         Console.ReadKey();
+        ShowMainMenu();
     }
 
     private void ExitGame()
     {
         Console.Clear();
         Console.WriteLine($"{Colors.Cyan}Made by Burak Bisneli.{Colors.Default}");
-        _isGameRunning = false;
+        Environment.Exit(0);
     }
 }

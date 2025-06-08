@@ -15,6 +15,7 @@ public static class PetInventoryManager
     public static void AdoptPet(Pet pet)
     {
         CurrentPets.Add(pet);
+        pet.OnAdopted?.Invoke();
         PetDatabase.Pets.Remove(pet);
     }
     
