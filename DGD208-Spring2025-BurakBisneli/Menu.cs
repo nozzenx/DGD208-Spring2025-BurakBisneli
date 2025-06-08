@@ -1,17 +1,14 @@
-﻿using System.Net.Mime;
-
-namespace DGD208_Spring2025_BurakBisneli;
+﻿namespace DGD208_Spring2025_BurakBisneli;
 
 public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this tutorial to achieve the base menu and used Claude Sonnet 4 to get ideas to adapt it myself.
 {
     private ConsoleKeyInfo _key;
-    private bool _isGameRunning = false;
     
     private static class Colors
     {
         public const string Magenta = "\e[35m";
         public const string Default = "\e[0m";
-        public const string Red = "\e[31m";
+        public const string Green = "\e[32m";
         public const string Cyan = "\e[36m";
     }
     
@@ -20,7 +17,6 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
     
     public void StartMenu()
     {
-        _isGameRunning = true;
         ShowMainMenu();
     }
 
@@ -53,7 +49,7 @@ public class Menu // I used (https://www.youtube.com/watch?v=YyD1MRJY0qI) this t
             // Display menu items
             for (int i = 0; i < menuItems.Count; i++)
             {
-                string color = selectedOption == i ? Colors.Cyan : Colors.Default; // Changing the selected option color
+                string color = selectedOption == i ? Colors.Green : Colors.Default; // Changing the selected option color
                 Console.WriteLine($"{color}{menuItems[i].Text}{Colors.Default}");
             }
             
